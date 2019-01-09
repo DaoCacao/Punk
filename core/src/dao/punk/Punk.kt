@@ -14,11 +14,18 @@ class Punk : Actor() {
 
     enum class State { Idle, Walking }
 
-    private val atlas = Texture("character_atlas.png")
-    private val allFrames = TextureRegion.split(atlas, atlas.width / 9, atlas.height / 4)
-    private val idleAnimation = Animation<TextureRegion>(0.1f, getFrames(allFrames[0]))
-    private val walkLeftAnimation = Animation<TextureRegion>(0.1f, getFrames(allFrames[1]))
-    private val walkRightAnimation = Animation<TextureRegion>(0.1f, getFrames(allFrames[2]))
+    private val idleAtlas = Texture("idle.png")
+    private val idleFrames = TextureRegion.split(idleAtlas, idleAtlas.width, idleAtlas.height)[0]
+    private val idleAnimation = Animation<TextureRegion>(0.1f, getFrames(idleFrames))
+
+    private val walkLeftAtlas = Texture("walk_left_atlas.png")
+    private val walkLeftFrames = TextureRegion.split(walkLeftAtlas, walkLeftAtlas.width / 3, walkLeftAtlas.height)[0]
+    private val walkLeftAnimation = Animation<TextureRegion>(0.1f, getFrames(walkLeftFrames))
+
+    private val walkRightAtlas = Texture("walk_right_atlas.png")
+    private val walkRightFrames = TextureRegion.split(walkRightAtlas, walkRightAtlas.width / 3, walkRightAtlas.height)[0]
+    private val walkRightAnimation = Animation<TextureRegion>(0.1f, getFrames(walkRightFrames))
+
 
     private var currentState = State.Idle
 
@@ -27,7 +34,7 @@ class Punk : Actor() {
     private var flippedRight = true
 
     init {
-        setBounds(0f, 0f, (atlas.width / 9).toFloat(), (atlas.height / 4).toFloat())
+        setBounds(0f, 0f, idleAtlas.width.toFloat(), idleAtlas.height.toFloat())
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
@@ -57,8 +64,12 @@ class Punk : Actor() {
 
     private fun flip(newX: Float) {
         when {
-            flippedRight && newX < x -> flippedRight = false
-            !flippedRight && newX > x -> flippedRight = true
+            flippedRight && newX < x -> {
+                flippedRight = false
+            }
+            !flippedRight && newX > x -> {
+                flippedRight = true
+            }
         }
     }
 

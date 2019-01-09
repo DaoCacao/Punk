@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 
-class Background(path: String, punk: Punk, private val camera: Camera) : Actor() {
+class Background(path: String, punk: Punk, camera: Camera) : Actor() {
 
     private val sprite: Sprite = Sprite(Texture(path))
 
@@ -28,7 +28,15 @@ class Background(path: String, punk: Punk, private val camera: Camera) : Actor()
 
             override fun touchDragged(event: InputEvent?, x: Float, y: Float, pointer: Int) {
                 super.touchDragged(event, x, y, pointer)
-                moveCamera()
+                val boundLeft = camera.viewportWidth / 2
+                val boundRight = sprite.boundingRectangle.width - camera.viewportWidth / 2
+
+                val deltaX = (-Gdx.input.deltaX * camera.viewportWidth / Gdx.graphics.width)
+                println("$deltaX $width ${camera.viewportWidth} ${Gdx.graphics.width}")
+
+                camera.translate(deltaX, 0f, 0f)
+                if (camera.position.x < boundLeft) camera.position.set(boundLeft, camera.position.y, 0f)
+                if (camera.position.x > boundRight) camera.position.set(boundRight, camera.position.y, 0f)
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
@@ -41,16 +49,5 @@ class Background(path: String, punk: Punk, private val camera: Camera) : Actor()
     override fun draw(batch: Batch?, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
         sprite.draw(batch!!)
-    }
-
-    private fun moveCamera() {
-        val boundLeft = camera.viewportWidth / 2
-        val boundRight = sprite.boundingRectangle.width - camera.viewportWidth / 2
-
-        val deltaX = (-Gdx.input.deltaX).toFloat()
-
-        camera.translate(deltaX, 0f, 0f)
-        if (camera.position.x < boundLeft) camera.position.set(boundLeft, camera.position.y, 0f)
-        if (camera.position.x > boundRight) camera.position.set(boundRight, camera.position.y, 0f)
     }
 }
