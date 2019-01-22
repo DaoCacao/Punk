@@ -1,4 +1,4 @@
-package dao.punk
+package dao.punk.backgrounds
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Camera
@@ -8,8 +8,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import dao.punk.Punk
 
-class Background(path: String, punk: Punk, camera: Camera) : Actor() {
+abstract class BaseBackground(path: String, punk: Punk, camera: Camera) : Actor() {
 
     private val sprite: Sprite = Sprite(Texture(path))
 
@@ -32,7 +33,6 @@ class Background(path: String, punk: Punk, camera: Camera) : Actor() {
                 val boundRight = sprite.boundingRectangle.width - camera.viewportWidth / 2
 
                 val deltaX = (-Gdx.input.deltaX * camera.viewportWidth / Gdx.graphics.width)
-                println("$deltaX $width ${camera.viewportWidth} ${Gdx.graphics.width}")
 
                 camera.translate(deltaX, 0f, 0f)
                 if (camera.position.x < boundLeft) camera.position.set(boundLeft, camera.position.y, 0f)
@@ -51,3 +51,5 @@ class Background(path: String, punk: Punk, camera: Camera) : Actor() {
         sprite.draw(batch!!)
     }
 }
+
+class RoomBackground(punk: Punk, camera: Camera): BaseBackground("room.png", punk, camera)

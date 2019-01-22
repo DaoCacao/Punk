@@ -2,12 +2,15 @@ package dao.punk
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.viewport.FitViewport
+import dao.punk.backgrounds.RoomBackground
+import dao.punk.objects.BedObject
 
 class RoomScreen : BaseScreen() {
 
     private val punk = Punk()
+    private val bed = BedObject(250f, 0f, punk)
 
-    override val background = Background("room.png", punk, camera)
+    override val background = RoomBackground(punk, camera)
 
     init {
         addActors()
@@ -18,6 +21,7 @@ class RoomScreen : BaseScreen() {
 
     private fun addActors() {
         addActor(background)
+        addActor(bed)
         addActor(punk)
     }
 }
