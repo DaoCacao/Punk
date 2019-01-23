@@ -1,6 +1,6 @@
 package dao.punk.needs
 
-class FoodNeed(value: Int) : BaseNeed(value, 3f) {
+class FoodNeed(value: Int, lastVisitTime: Long) : BaseNeed(value, 3f, lastVisitTime) {
 
     override val needChangeListener = object : OnNeedChangeListener {
         override fun onNeedChanged(value: Int) {

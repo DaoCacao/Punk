@@ -1,27 +1,31 @@
-package dao.punk
+package dao.punk.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.viewport.FitViewport
+import dao.punk.UiTable
 import dao.punk.backgrounds.RoomBackground
-import dao.punk.objects.BedObject
+import dao.punk.listeners.GlobalListener
 
 class RoomScreen : BaseScreen() {
 
-    private val punk = Punk()
-    private val bed = BedObject(250f, 0f, punk)
+    override val background = RoomBackground()
 
-    override val background = RoomBackground(punk, camera)
+    private val ui = UiTable(punk)
+    private val globalListener: GlobalListener = GlobalListener(background, punk, camera, ui)
 
     init {
         addActors()
+        addListener(globalListener)
         Gdx.input.inputProcessor = this
 
         viewport = FitViewport(background.height * Gdx.graphics.width / Gdx.graphics.height, background.height, camera)
+        punk.init()
     }
 
     private fun addActors() {
         addActor(background)
-        addActor(bed)
         addActor(punk)
+        addActor(ui)
     }
 }
+

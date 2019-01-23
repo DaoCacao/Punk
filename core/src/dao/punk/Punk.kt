@@ -7,27 +7,29 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Array
 import dao.punk.needs.FoodNeed
 import dao.punk.needs.JoyNeed
 import dao.punk.needs.SleepNeed
 
 
-class Punk : Actor() {
+class Punk(lastVisitTime: Long, posX: Float, posY: Float, sleepValue: Int, hungerValue: Int, happinessValue: Int) : Actor() {
 
     enum class State { Idle, Walking }
 
-    private val sleep = SleepNeed(100)
-    private val hunger = FoodNeed(100)
-    private val happyness = JoyNeed(100)
+    val sleep = SleepNeed(sleepValue, lastVisitTime)
+    val hunger = FoodNeed(hungerValue, lastVisitTime)
+    val happiness = JoyNeed(happinessValue, lastVisitTime)
 
-    private val idleAtlas = Texture("idle.png")
+    private val idleAtlas = Texture("punk/idle.png")
     private val idleFrames = TextureRegion.split(idleAtlas, idleAtlas.width, idleAtlas.height)[0]
     private val idleAnimation = Animation<TextureRegion>(0.1f, getFrames(idleFrames))
 
-    private val walkLeftAnimation = Animation<TextureRegion>(0.1f, TextureAtlas("walk_left.atlas").regions)
-    private val walkRightAnimation = Animation<TextureRegion>(0.1f, TextureAtlas("walk_right.atlas").regions)
+    private val walkLeftAnimation = Animation<TextureRegion>(0.1f, TextureAtlas("punk/walk_left.atlas").regions)
+    private val walkRightAnimation = Animation<TextureRegion>(0.1f, TextureAtlas("punk/walk_right.atlas").regions)
 
     private var currentState = State.Idle
 
@@ -35,8 +37,19 @@ class Punk : Actor() {
 
     private var flippedRight = true
 
+    private val speed = 100f
+
     init {
-        setBounds(0f, 0f, idleAtlas.width.toFloat(), idleAtlas.height.toFloat())
+        setBounds(posX, posY, idleAtlas.width.toFloat(), idleAtlas.height.toFloat())
+
+        addListener(object : ClickListener() {
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                super.touchUp(event, x, y, pointer, button)
+                sleep.restart()
+                hunger.restart()
+                happiness.restart()
+            }
+        })
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
@@ -55,30 +68,38 @@ class Punk : Actor() {
         batch.draw(frame, x, y)
     }
 
-    fun move(x: Float) {
-        currentState = State.Walking
-        val newX = x - width / 2
-        flip(newX)
-        clearActions()
-        addAction(Actions.sequence(Actions.moveTo(newX, y, 1f), Actions.run { currentState = State.Idle }))
+    fun init() {
+        sleep.start()
+        hunger.start()
+        happiness.start()
     }
 
-    fun interact(x: Float, action: () -> Unit) {
+    fun move(x: Float, action: () -> Unit = {}) {
         currentState = State.Walking
         val newX = x - width / 2
+        val duration = Math.abs(this.x - newX) / speed
         flip(newX)
         clearActions()
-        addAction(Actions.sequence(Actions.moveTo(newX, y, 1f), Actions.run { currentState = State.Idle; action.invoke() }))
+        addAction(Actions.sequence(Actions.moveTo(newX, y, duration), Actions.run { currentState = State.Idle; action.invoke() }))
     }
 
     fun satisfySleep(value: Int) {
         sleep.satisfyBy(value)
     }
+
     fun satisfyHunger(value: Int) {
         hunger.satisfyBy(value)
     }
-    fun satisfyHappyness(value: Int) {
-        happyness.satisfyBy(value)
+
+    fun satisfyHappiness(value: Int) {
+        happiness.satisfyBy(value)
+    }
+
+    fun restore(punk: Punk) {
+        setPosition(punk.x, punk.y)
+        sleep.value = punk.sleep.value
+        hunger.value = punk.hunger.value
+        happiness.value = punk.happiness.value
     }
 
     private fun flip(newX: Float) {

@@ -23,7 +23,7 @@ abstract class BaseObject(texture: String, x: Float, y: Float,
         addListener(object : ClickListener() {
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
                 super.touchUp(event, x, y, pointer, button)
-                punk.interact(getX() + width / 2, onInteract)
+                punk.move(getX() + width / 2, onInteract)
             }
         })
     }

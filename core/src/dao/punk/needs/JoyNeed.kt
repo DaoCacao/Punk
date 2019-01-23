@@ -1,6 +1,6 @@
 package dao.punk.needs
 
-class JoyNeed(value: Int) : BaseNeed(value, 1f) {
+class JoyNeed(value: Int, lastVisitTime: Long) : BaseNeed(value, 1f, lastVisitTime) {
 
     override val needChangeListener = object : OnNeedChangeListener {
         override fun onNeedChanged(value: Int) {

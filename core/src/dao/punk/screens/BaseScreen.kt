@@ -1,17 +1,21 @@
-package dao.punk
+package dao.punk.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.scenes.scene2d.Stage
+import dao.punk.AppPreferences
 import dao.punk.backgrounds.BaseBackground
 
 abstract class BaseScreen : Stage(), Screen {
 
     abstract val background: BaseBackground
 
-    override fun show() {
+    private val prefs = AppPreferences()
 
+    protected var punk = prefs.getPunk()
+
+    override fun show() {
     }
 
     override fun render(delta: Float) {
@@ -28,9 +32,15 @@ abstract class BaseScreen : Stage(), Screen {
         viewport.update(width, height, true)
     }
 
-    override fun pause() {}
+    override fun pause() {
+        prefs.savePunk(punk)
+    }
 
-    override fun resume() {}
+    override fun resume() {
+        punk.restore(prefs.getPunk())
+    }
 
-    override fun hide() {}
+    override fun hide() {
+    }
 }
+
